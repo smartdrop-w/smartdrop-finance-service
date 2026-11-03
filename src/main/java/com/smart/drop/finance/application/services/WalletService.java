@@ -71,20 +71,7 @@ public class WalletService {
 
     public PaymentMethod addPaymentMethod(Integer userId, String type, String label, String sub, Boolean primary) {
         if (Boolean.TRUE.equals(primary)) {
-            // Remove primary status from other payment methods
-            List<PaymentMethod> existing = financeRepository.findPaymentMethodsByUserId(userId);
-            for (PaymentMethod method : existing) {
-                if (Boolean.TRUE.equals(method.primary())) {
-                    financeRepository.savePaymentMethod(new PaymentMethod(
-                            method.paymentMethodId(),
-                            method.userId(),
-                            method.type(),
-                            method.label(),
-                            method.sub(),
-                            false
-                    ));
-                }
-            }
+            financeRepository.resetPrimaryPaymentMethods(userId);
         }
 
         PaymentMethod method = PaymentMethod.create(userId, type, label, sub, primary);
@@ -92,30 +79,20 @@ public class WalletService {
     }
 
     public PaymentMethod setPrimaryPaymentMethod(Integer userId, Integer paymentMethodId) {
-        List<PaymentMethod> existing = financeRepository.findPaymentMethodsByUserId(userId);
-        PaymentMethod primaryMethod = null;
+        PaymentMethod target = financeRepository.findPaymentMethodById(paymentMethodId)
+                .filter(pm -> pm.userId().equals(userId))
+                .orElseThrow(() -> new IllegalArgumentException("Payment method not found: " + paymentMethodId));
 
-        for (PaymentMethod method : existing) {
-            boolean isTarget = method.paymentMethodId().equals(paymentMethodId);
-            PaymentMethod updated = new PaymentMethod(
-                    method.paymentMethodId(),
-                    method.userId(),
-                    method.type(),
-                    method.label(),
-                    method.sub(),
-                    isTarget
-            );
-            financeRepository.savePaymentMethod(updated);
-            if (isTarget) {
-                primaryMethod = updated;
-            }
-        }
+        financeRepository.setPrimaryPaymentMethod(userId, paymentMethodId);
 
-        if (primaryMethod == null) {
-            throw new IllegalArgumentException("Payment method not found: " + paymentMethodId);
-        }
-
-        return primaryMethod;
+        return new PaymentMethod(
+                target.paymentMethodId(),
+                target.userId(),
+                target.type(),
+                target.label(),
+                target.sub(),
+                true
+        );
     }
 
     public void deletePaymentMethod(Integer paymentMethodId) {

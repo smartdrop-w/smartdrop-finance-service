@@ -3,6 +3,7 @@ package com.smart.drop.finance.application.services;
 import com.smart.drop.finance.domain.model.aggregates.Subscription;
 import com.smart.drop.finance.domain.model.entities.Invoice;
 import com.smart.drop.finance.domain.model.entities.Payment;
+import com.smart.drop.finance.domain.model.entities.PaymentMethod;
 import com.smart.drop.finance.domain.model.entities.SubscriptionPlan;
 import com.smart.drop.finance.domain.model.entities.Wallet;
 import com.smart.drop.finance.domain.model.ports.PaymentGatewayPort;
@@ -107,5 +108,36 @@ class FinanceAndSubscriptionBddTest {
         assertThat(payment.transactionId()).isEqualTo("TX-998877");
         verify(subscriptionRepository, times(1)).saveInvoice(any(Invoice.class));
         verify(subscriptionRepository, times(1)).updateSubscription(argThat(s -> "ACTIVE".equals(s.status())));
+    }
+
+    @Test
+    @DisplayName("US15 Escenario 5: Establecer metodo de pago principal mediante actualizacion atomica")
+    void shouldSetPrimaryPaymentMethodSuccessfully() {
+        // Given
+        PaymentMethod method = new PaymentMethod(501, 1001, "CARD", "Visa Platinum", "•••• 4242", false);
+        when(financeRepository.findPaymentMethodById(501)).thenReturn(Optional.of(method));
+
+        // When
+        PaymentMethod result = walletService.setPrimaryPaymentMethod(1001, 501);
+
+        // Then
+        assertThat(result.primary()).isTrue();
+        verify(financeRepository, times(1)).setPrimaryPaymentMethod(1001, 501);
+    }
+
+    @Test
+    @DisplayName("US15 Escenario 6: Reiniciar metodos primarios al registrar un nuevo metodo principal")
+    void shouldResetPreviousPrimaryMethodsWhenAddingNewPrimary() {
+        // Given
+        PaymentMethod newMethod = PaymentMethod.create(1001, "CARD", "MasterCard", "•••• 9876", true);
+        when(financeRepository.savePaymentMethod(any(PaymentMethod.class))).thenReturn(newMethod);
+
+        // When
+        PaymentMethod result = walletService.addPaymentMethod(1001, "CARD", "MasterCard", "•••• 9876", true);
+
+        // Then
+        assertThat(result.primary()).isTrue();
+        verify(financeRepository, times(1)).resetPrimaryPaymentMethods(1001);
+        verify(financeRepository, times(1)).savePaymentMethod(any(PaymentMethod.class));
     }
 }

@@ -60,6 +60,16 @@ public class FinanceRepositoryAdapter implements FinanceRepository {
     }
 
     @Override
+    public void resetPrimaryPaymentMethods(Integer userId) {
+        paymentMethodJpaRepository.resetPrimaryForUser(userId);
+    }
+
+    @Override
+    public void setPrimaryPaymentMethod(Integer userId, Integer paymentMethodId) {
+        paymentMethodJpaRepository.setPrimaryPaymentMethod(userId, paymentMethodId);
+    }
+
+    @Override
     public void deletePaymentMethodById(Integer paymentMethodId) {
         paymentMethodJpaRepository.deleteById(paymentMethodId);
     }

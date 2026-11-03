@@ -22,6 +22,10 @@ public interface FinanceRepository {
 
     List<PaymentMethod> findPaymentMethodsByUserId(Integer userId);
 
+    void resetPrimaryPaymentMethods(Integer userId);
+
+    void setPrimaryPaymentMethod(Integer userId, Integer paymentMethodId);
+
     void deletePaymentMethodById(Integer paymentMethodId);
 
     WalletTransaction saveTransaction(WalletTransaction transaction);
