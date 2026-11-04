@@ -32,7 +32,15 @@ public class FinanceRepositoryAdapter implements FinanceRepository {
 
     @Override
     public Wallet saveWallet(Wallet wallet) {
-        WalletEntity entity = toEntity(wallet);
+        WalletEntity entity;
+        if (wallet.walletId() != null) {
+            entity = walletJpaRepository.findById(wallet.walletId())
+                    .orElseGet(() -> toEntity(wallet));
+            entity.setBalance(wallet.balance());
+            entity.setUserId(wallet.userId());
+        } else {
+            entity = toEntity(wallet);
+        }
         WalletEntity saved = walletJpaRepository.save(entity);
         return toDomain(saved);
     }

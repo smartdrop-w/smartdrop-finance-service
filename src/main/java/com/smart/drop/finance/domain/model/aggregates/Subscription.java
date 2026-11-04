@@ -47,6 +47,21 @@ public record Subscription(
         );
     }
 
+    public Subscription withAutoRenew(Boolean newAutoRenew) {
+        return new Subscription(
+                subscriptionId,
+                userId,
+                planId,
+                status,
+                startDate,
+                endDate,
+                newAutoRenew,
+                plan,
+                invoices,
+                payments
+        );
+    }
+
     public Subscription withStatus(String newStatus) {
         return new Subscription(
                 subscriptionId,

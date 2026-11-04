@@ -33,6 +33,8 @@ public interface SubscriptionRepository {
 
     Invoice saveInvoice(Invoice invoice);
 
+    Optional<Invoice> findInvoiceById(Integer invoiceId);
+
     List<Invoice> findInvoicesBySubscriptionId(Integer subscriptionId);
 }
 

@@ -152,6 +152,11 @@ public class SubscriptionRepositoryAdapter implements SubscriptionRepository {
     }
 
     @Override
+    public Optional<Invoice> findInvoiceById(Integer invoiceId) {
+        return invoiceJpaRepository.findById(invoiceId).map(this::toInvoiceDomain);
+    }
+
+    @Override
     public List<Invoice> findInvoicesBySubscriptionId(Integer subscriptionId) {
         return invoiceJpaRepository.findBySubscription_SubscriptionId(subscriptionId).stream()
                 .map(this::toInvoiceDomain)
