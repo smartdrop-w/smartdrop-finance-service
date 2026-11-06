@@ -41,5 +41,11 @@ public class RouteService {
     public List<Route> getByCarrier(Integer carrierId) {
         return routeRepository.findByAssignedCarrierId(carrierId);
     }
-}
 
+    public Route updateRouteStatus(Integer routeId, String status) {
+        Route current = routeRepository.findById(routeId)
+                .orElseThrow(() -> new IllegalArgumentException("Route not found: " + routeId));
+        Route updated = current.withStatus(status);
+        return routeRepository.update(updated);
+    }
+}

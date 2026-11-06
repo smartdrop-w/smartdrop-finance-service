@@ -13,6 +13,7 @@ public record Route(
         BigDecimal distanceKm,
         BigDecimal estimatedTime,
         Integer assignedCarrierId,
+        String status,
         LocalDateTime createdAt
 ) {
     public Route {
@@ -34,6 +35,13 @@ public record Route(
         if (estimatedTime == null || estimatedTime.signum() < 0) {
             throw new IllegalArgumentException("estimatedTime must be >= 0");
         }
+        if (status == null || status.isBlank()) {
+            status = "SCHEDULED";
+        }
+    }
+
+    public Route(Integer routeId, String origin, String destination, BigDecimal distanceKm, BigDecimal estimatedTime, Integer assignedCarrierId, LocalDateTime createdAt) {
+        this(routeId, origin, destination, distanceKm, estimatedTime, assignedCarrierId, "SCHEDULED", createdAt);
     }
 
     public static Route create(String origin,
@@ -41,11 +49,14 @@ public record Route(
                                BigDecimal distanceKm,
                                BigDecimal estimatedTime,
                                Integer assignedCarrierId) {
-        return new Route(null, origin, destination, distanceKm, estimatedTime, assignedCarrierId, LocalDateTime.now());
+        return new Route(null, origin, destination, distanceKm, estimatedTime, assignedCarrierId, "SCHEDULED", LocalDateTime.now());
     }
 
     public Route assignCarrier(Integer carrierId) {
-        return new Route(routeId, origin, destination, distanceKm, estimatedTime, carrierId, createdAt);
+        return new Route(routeId, origin, destination, distanceKm, estimatedTime, carrierId, status, createdAt);
+    }
+
+    public Route withStatus(String newStatus) {
+        return new Route(routeId, origin, destination, distanceKm, estimatedTime, assignedCarrierId, newStatus, createdAt);
     }
 }
-

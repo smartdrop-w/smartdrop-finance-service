@@ -47,5 +47,16 @@ public class AssignmentService {
     public List<Carrier> getAllCarriers() {
         return carrierRepository.findAll();
     }
-}
 
+    public Carrier updateCarrierStatus(Integer carrierId, String status) {
+        Carrier current = carrierRepository.findById(carrierId)
+                .orElseThrow(() -> new IllegalArgumentException("Carrier not found: " + carrierId));
+        Carrier updated = new Carrier(
+                current.carrierId(),
+                current.name(),
+                current.contactPhone(),
+                status
+        );
+        return carrierRepository.save(updated);
+    }
+}

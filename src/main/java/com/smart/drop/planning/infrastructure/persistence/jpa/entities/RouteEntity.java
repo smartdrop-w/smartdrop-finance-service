@@ -41,6 +41,17 @@ public class RouteEntity {
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
 
+    @Column(name = "Status", length = 30)
+    private String status = "SCHEDULED";
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public Integer getRouteId() {
         return routeId;
     }

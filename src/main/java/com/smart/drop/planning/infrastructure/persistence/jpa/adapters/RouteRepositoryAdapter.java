@@ -43,6 +43,7 @@ public class RouteRepositoryAdapter implements RouteRepository {
         existing.setDistanceKm(route.distanceKm());
         existing.setEstimatedTime(route.estimatedTime());
         existing.setAssignedCarrier(resolveCarrier(route.assignedCarrierId()));
+        existing.setStatus(route.status());
 
         RouteEntity updated = routeJpaRepository.save(existing);
         return toDomain(updated);
@@ -71,6 +72,7 @@ public class RouteRepositoryAdapter implements RouteRepository {
         entity.setDistanceKm(route.distanceKm());
         entity.setEstimatedTime(route.estimatedTime());
         entity.setAssignedCarrier(resolveCarrier(route.assignedCarrierId()));
+        entity.setStatus(route.status());
         entity.setCreatedAt(route.createdAt());
         return entity;
     }
@@ -91,6 +93,7 @@ public class RouteRepositoryAdapter implements RouteRepository {
                 entity.getDistanceKm(),
                 entity.getEstimatedTime(),
                 entity.getAssignedCarrier() == null ? null : entity.getAssignedCarrier().getCarrierId(),
+                entity.getStatus() != null ? entity.getStatus() : "SCHEDULED",
                 entity.getCreatedAt()
         );
     }
