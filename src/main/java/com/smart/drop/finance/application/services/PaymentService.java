@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -58,6 +59,13 @@ public class PaymentService {
         return subscriptionRepository.findSubscriptionsByUserId(userId);
     }
 
+    public Subscription toggleAutoRenew(Integer subscriptionId, Boolean autoRenew) {
+        Subscription subscription = getSubscriptionById(subscriptionId);
+        boolean targetAutoRenew = (autoRenew != null) ? autoRenew : !Boolean.TRUE.equals(subscription.autoRenew());
+        Subscription updated = subscription.withAutoRenew(targetAutoRenew);
+        return subscriptionRepository.updateSubscription(updated);
+    }
+
     public Subscription updateSubscriptionStatus(Integer subscriptionId, String status) {
         Subscription subscription = getSubscriptionById(subscriptionId);
         Subscription updated = subscription.withStatus(status);
@@ -103,6 +111,11 @@ public class PaymentService {
     @Transactional(readOnly = true)
     public List<Invoice> getInvoicesBySubscriptionId(Integer subscriptionId) {
         return subscriptionRepository.findInvoicesBySubscriptionId(subscriptionId);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Invoice> getInvoiceById(Integer invoiceId) {
+        return subscriptionRepository.findInvoiceById(invoiceId);
     }
 }
 
